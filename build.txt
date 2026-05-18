@@ -1,0 +1,3 @@
+displayName = TerrariaRL
+author = You
+version = 0.1.0
