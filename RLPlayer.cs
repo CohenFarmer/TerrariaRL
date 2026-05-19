@@ -4,26 +4,41 @@ using Terraria.ModLoader;
 
 namespace TerrariaRL
 {
-    //RLPlayer, hooks into the player's input processing.
-    //the RLBridge stores the latest action in static fields.
-    //this class reads those fields and applies them.
     public class RLPlayer : ModPlayer
     {
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
-            //only override controls when Python is connected
+            //record human input
+            if (RLBridge.Recording)
+            {
+                Player p = Player;
+
+                //movement
+                RLBridge.RecordMoveX = p.controlLeft ? 0 : (p.controlRight ? 2 : 1);
+                RLBridge.RecordJump = p.controlJump ? 1 : 0;
+                RLBridge.RecordHotbar = p.selectedItem;
+
+                //mouse relative to the center screen, same as RL agent
+                RLBridge.RecordMouseX = Main.mouseX - (Main.screenWidth / 2);
+                RLBridge.RecordMouseY = Main.mouseY - (Main.screenHeight / 2);
+
+                //item use
+                RLBridge.RecordUseItem = p.controlUseItem ? 1 : (p.controlUseTile ? 2 : 0);
+
+                return;
+            }
+
+            //if in rl, override controls
             if (!RLBridge.Connected) return;
 
-            Player p = Player;
+            Player player = Player;
 
-            //read the latest action from RLBridge 
-
-            p.controlLeft    = RLBridge.ActionMoveX == 0;
-            p.controlRight   = RLBridge.ActionMoveX == 2;
-            p.controlJump    = RLBridge.ActionJump == 1;
-            p.controlUseItem = RLBridge.ActionUseItem == 1;
-            p.controlUseTile = RLBridge.ActionUseItem == 2;
-            p.selectedItem   = System.Math.Clamp(RLBridge.ActionHotbar, 0, 9);
+            player.controlLeft    = RLBridge.ActionMoveX == 0;
+            player.controlRight   = RLBridge.ActionMoveX == 2;
+            player.controlJump    = RLBridge.ActionJump == 1;
+            player.controlUseItem = RLBridge.ActionUseItem == 1;
+            player.controlUseTile = RLBridge.ActionUseItem == 2;
+            player.selectedItem   = System.Math.Clamp(RLBridge.ActionHotbar, 0, 9);
 
             Main.mouseX = (Main.screenWidth / 2) + RLBridge.ActionMouseX;
             Main.mouseY = (Main.screenHeight / 2) + RLBridge.ActionMouseY;

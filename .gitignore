@@ -17,7 +17,7 @@ description_workshop.txt
 
 __pycache__/
 *.pyc
-.venv/
+terrariarl/
 
 #training
 logs/
@@ -31,3 +31,10 @@ wandb/
 Thumbs.db
 .vscode/
 .idea/
+
+#files used for testing, not needed
+data/frames/
+agent/compare_encoders.py
+data/encoder_results/
+env/collect_frames.py #was used for collecting many frames for encoder training, not needed
+env/test_connection.py
